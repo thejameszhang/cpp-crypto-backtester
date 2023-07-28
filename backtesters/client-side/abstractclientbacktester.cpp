@@ -7,8 +7,8 @@ AbstractClientBacktester::AbstractClientBacktester()
 }
 
 // Second constructor.
-AbstractClientBacktester::AbstractClientBacktester(boost::posix_time::ptime& _start_date, 
-boost::posix_time::ptime& _end_date, int _max_lookback)
+AbstractClientBacktester::AbstractClientBacktester(boost::gregorian::date& _start_date, 
+boost::gregorian::date& _end_date, int _max_lookback)
 : AbstractBacktester::AbstractBacktester(_start_date, _end_date, _max_lookback) {
 
 }

@@ -3,13 +3,13 @@
 AbstractBacktester::AbstractBacktester() {
     // If no parameters are provided, then initalize fields to the earliest time,
     // latest time, and 100 day lookback.
-    this->start_date = boost::posix_time::time_from_string("2021-01-01 00:00:00");
-    this->end_date = boost::posix_time::time_from_string("2023-01-31 23:59:00");
+    this->start_date = boost::gregorian::from_string("2021-01-01 00:00:00");
+    this->end_date = boost::gregorian::from_string("2023-01-31 23:59:00");
     this->max_lookback = 100;
 }
 
-AbstractBacktester::AbstractBacktester(boost::posix_time::ptime& _start_date, 
-                    boost::posix_time::ptime& _end_date, int _max_lookback) {
+AbstractBacktester::AbstractBacktester(boost::gregorian::date& _start_date, 
+                    boost::gregorian::date& _end_date, int _max_lookback) {
 
     // Checking for valid parameters.
     if (_start_date > _end_date || _max_lookback < 0) 

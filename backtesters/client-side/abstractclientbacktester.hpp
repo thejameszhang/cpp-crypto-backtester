@@ -8,8 +8,8 @@ public:
     AbstractClientBacktester();
     
     // Second constructor for the AbstractClientBacktester.
-    AbstractClientBacktester(boost::posix_time::ptime& _start_date, 
-                       boost::posix_time::ptime& _end_date, 
+    AbstractClientBacktester(boost::gregorian::date& _start_date, 
+                       boost::gregorian::date& _end_date, 
                         int _max_lookback);
     
     // Note still not implementing backtest function.

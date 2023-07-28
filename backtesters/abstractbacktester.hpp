@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <abstractalpha.hpp>
 typedef long double ld;
@@ -15,8 +16,8 @@ public:
     AbstractBacktester();
 
     // Default constructor for the AbstractBacktester
-    AbstractBacktester(boost::posix_time::ptime& _start_date, 
-                       boost::posix_time::ptime& _end_date, 
+    AbstractBacktester(boost::gregorian::date& _start_date, 
+                       boost::gregorian::date& _end_date, 
                         int _max_lookback);
 
     // Save the current backtester object.
@@ -33,8 +34,8 @@ public:
     virtual ~AbstractBacktester() {}
 
 private:
-    boost::posix_time::ptime start_date;
-    boost::posix_time::ptime end_date;
+    boost::gregorian::date start_date;
+    boost::gregorian::date end_date;
     int max_lookback;
     /*
     Further along the line, I can implement more features in both the 
