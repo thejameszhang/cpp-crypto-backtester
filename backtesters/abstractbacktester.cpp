@@ -64,8 +64,11 @@ AbstractBacktester::get_data_chunk(std::string start_date) {
         - volume -> 2d vector of volume data for all currency pairs on an exchange 
         ...
     */
+    // Get the end date of the chunk, given the start date.
     std::string end_date = AbstractBacktester::chunk_end_date(start_date);
+    // If the end date is later than the end of the backtesting period.
     end_date = std::min(end_date, this->end_date);
+    // Query database for the data for each factor.
     std::unordered_map<std::string, std::vector<std::vector<ld>>> res;
     for (auto factor : this->factors) {
         res[factor] = get_data(start_date, end_date, this->exchange, factor);
@@ -73,8 +76,12 @@ AbstractBacktester::get_data_chunk(std::string start_date) {
     return res;
 }
 
-// Find the next end time for the chunk.
 std::string AbstractBacktester::chunk_end_date(std::string start_date) {
+    /* 
+    Helper function to find the end date of the chunk given the start date.
+    :param start_date: chunk starting date
+    :return: chunk ending date
+    */
     // Convert the timestamp string to a std::chrono::time_point object
     std::tm tmStruct = {};
     std::istringstream timestampStream(start_date);
@@ -90,16 +97,52 @@ std::string AbstractBacktester::chunk_end_date(std::string start_date) {
     return resultStream.str();
 }
 
-// Saves the current backtester object.
+std::string AbstractBacktester::increment_timestamp(std::string current_date) {
+    /* 
+    Helper function to increment the current date by a minute.
+    :param current_date: current_date in the backtesting period
+    :return: the next minute
+    */
+    // Convert the timestamp string to a std::chrono::time_point object
+    std::tm tmStruct = {};
+    std::istringstream timestampStream(start_date);
+    timestampStream >> std::get_time(&tmStruct, "%Y-%m-%d %H:%M:%S");
+    std::chrono::system_clock::time_point timestamp;
+    timestamp = std::chrono::system_clock::from_time_t(std::mktime(&tmStruct));
+    // Add the specified number of minutes to the time_point
+    timestamp += std::chrono::minutes(1);
+    // Convert the updated time_point back to a timestamp string
+    std::time_t time_tTimestamp = std::chrono::system_clock::to_time_t(timestamp);
+    std::stringstream resultStream;
+    resultStream << std::put_time(std::localtime(&time_tTimestamp), "%Y-%m-%d %H:%M:%S");
+    return resultStream.str();
+}
+
+std::string AbstractBacktester::get_start_date() {
+    return this->start_date;
+}
+
+std::string AbstractBacktester::get_end_date() {
+    return this->end_date;
+}
+
 void AbstractBacktester::save(const std::string& filename) {
+    /* 
+    The researcher can saves the current state of the backtester.
+    :param filename: path that the backtester will be saved to
+    */
     std::ofstream outFile(filename, std::ios::binary);
     if (outFile) {
         outFile.write(reinterpret_cast<const char*>(this), sizeof(*this));
     }
 }
 
-// Loads the current backtester oject.
 void AbstractBacktester::load(const std::string& filename) {
+    /* 
+    The researcher can load the backtester from a previous session, significantly
+    saving time from having to redefine it.
+    :param filename: current path of the backtester
+    */
     std::ifstream inFile(filename, std::ios::binary);
     if (inFile) {
         inFile.read(reinterpret_cast<char*>(this), sizeof(*this));

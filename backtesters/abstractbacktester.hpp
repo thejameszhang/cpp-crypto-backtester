@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <chrono>
 #include <iomanip>
+#include <eigen3/Eigen/Dense>
 #include <abstractalpha.hpp>
 typedef long double ld;
 
@@ -15,27 +16,19 @@ typedef long double ld;
 class AbstractBacktester {
 
 public:
-
     // The default constructor for the AbstractBacktester.
     AbstractBacktester(std::string _start_date, 
                        std::string _end_date, 
                        int _max_lookback,
                        std::string _exchange, 
                        std::vector<std::string> _factors);
-
-    // Define the list of all exchanges and factors.
-    std::unordered_set<std::string> exchanges_set = {"binance_futures", "binanceus", 
-    "binance_spot", "okx"};
-    std::unordered_set<std::string> factors_set = {"open", "high", "low", "close", 
-    "volume", "vwap"};
-
-    // Gets a chunk of data for backtesting.
-    std::unordered_map<std::string, std::vector<std::vector<ld>>> 
-    get_data_chunk(std::string start_date);
-
-    // Find the next end time for the chunk given the start time.
-    std::string chunk_end_date(std::string start_date);
     
+    // Start date getter
+    std::string get_start_date();
+
+    // End date getter
+    std::string get_end_date();
+
     // Save the current backtester object.
     void save(const std::string& filename);
 
@@ -43,8 +36,8 @@ public:
     void load(const std::string& filename);
 
     // Pure virtual function for backtesting.
-    virtual std::pair<std::vector<ld>, std::vector<std::vector<ld>>> 
-            backtest(AbstractAlpha alpha) = 0;
+    virtual std::pair<std::vector<std::vector<ld>>, std::vector<std::vector<ld>>> 
+            backtest(AbstractAlpha* alpha) = 0;
 
     // Virtual destructor (needed for polymorphic behavior).
     virtual ~AbstractBacktester() {}
@@ -57,6 +50,22 @@ private:
     std::vector<std::string> factors;
     int data_reload_interval = 5000;
     std::unordered_map<int, std::string> universe;
+    
+    // Define the sets of all exchanges and factors.
+    std::unordered_set<std::string> exchanges_set = {"binance_futures", "binanceus", 
+    "binance_spot", "okx"};
+    std::unordered_set<std::string> factors_set = {"open", "high", "low", "close", 
+    "volume", "vwap"};
+
+    // Gets a chunk of data for backtesting.
+    std::unordered_map<std::string, std::vector<std::vector<ld>>> 
+    get_data_chunk(std::string start_date);
+
+    // Find the next end time for the chunk given the start time.
+    std::string chunk_end_date(std::string start_date);
+
+    // Increment the current time by a minute.
+    std::string increment_timestamp(std::string current_date);
 };
 
 #endif // ABSTRACTBACKTESTER_H
