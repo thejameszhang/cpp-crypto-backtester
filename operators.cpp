@@ -1,7 +1,4 @@
-#include <iostream>
-#include <vector>
 #include "operators.hpp"
-
 
 void weight_long(std::vector<ld>& holdings) {
     return;
