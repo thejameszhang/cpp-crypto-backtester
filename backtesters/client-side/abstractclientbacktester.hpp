@@ -3,20 +3,15 @@
 class AbstractClientBacktester : public AbstractBacktester {
 
 public:
-
-    // Default constructor for the AbstractClientBacktester.
-    AbstractClientBacktester();
     
     // Second constructor for the AbstractClientBacktester.
-    AbstractClientBacktester(boost::gregorian::date& _start_date, 
-                       boost::gregorian::date& _end_date, 
-                        int _max_lookback);
+    AbstractClientBacktester(std::string _start_date, 
+                            std::string _end_date, 
+                            int _max_lookback,
+                            std::string _exchange, 
+                            std::vector<std::string> _factors);
     
-    // Note still not implementing backtest function.
+    // Note that this is still an abstract class, so not yet
+    // implementing the virtual backtest function
 
-    // 
-    
-
-private:
-    int data_reload_interval = 5000;
 };
