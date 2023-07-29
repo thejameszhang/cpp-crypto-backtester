@@ -13,5 +13,4 @@ public:
     
     // Note that this is still an abstract class, so not yet
     // implementing the virtual backtest function
-
 };

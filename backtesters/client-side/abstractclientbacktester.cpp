@@ -7,5 +7,4 @@ AbstractClientBacktester::AbstractClientBacktester(std::string _start_date,
                         std::vector<std::string> _factors) : 
 AbstractBacktester::AbstractBacktester(_start_date, _end_date, _max_lookback, 
 _exchange, _factors) {
-
 }
