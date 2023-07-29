@@ -77,3 +77,4 @@ for factor in factors:
             print(file)
             df = pd.read_parquet(f"{path}{file}")
             df.to_sql(name=f"{exchange}-{factor}", con=engine, if_exists='append', index=True)
+
