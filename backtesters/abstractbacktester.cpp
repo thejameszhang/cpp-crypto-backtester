@@ -1,5 +1,4 @@
 #include <abstractbacktester.hpp>
-#include <../database/utils.hpp>
 
 /* 
 The AbstractBacktester class serves as a foundation for other variations of 
@@ -65,58 +64,18 @@ AbstractBacktester::get_data_chunk(std::string start_date) {
         ...
     */
     // Get the end date of the chunk, given the start date.
-    std::string end_date = AbstractBacktester::chunk_end_date(start_date);
+    std::string end_date = time_shift(start_date, this->data_reload_interval);
     // If the end date is later than the end of the backtesting period.
     end_date = std::min(end_date, this->end_date);
     // Query database for the data for each factor.
+    std::string real_start = time_shift(start_date, -this->max_lookback);
     std::unordered_map<std::string, std::vector<std::vector<ld>>> res;
     for (auto factor : this->factors) {
-        res[factor] = get_data(start_date, end_date, this->exchange, factor);
+        res[factor] = get_data(real_start, end_date, this->exchange, factor);
     }
     return res;
 }
 
-std::string AbstractBacktester::chunk_end_date(std::string start_date) {
-    /* 
-    Helper function to find the end date of the chunk given the start date.
-    :param start_date: chunk starting date
-    :return: chunk ending date
-    */
-    // Convert the timestamp string to a std::chrono::time_point object
-    std::tm tmStruct = {};
-    std::istringstream timestampStream(start_date);
-    timestampStream >> std::get_time(&tmStruct, "%Y-%m-%d %H:%M:%S");
-    std::chrono::system_clock::time_point timestamp;
-    timestamp = std::chrono::system_clock::from_time_t(std::mktime(&tmStruct));
-    // Add the specified number of minutes to the time_point
-    timestamp += std::chrono::minutes(this->data_reload_interval);
-    // Convert the updated time_point back to a timestamp string
-    std::time_t time_tTimestamp = std::chrono::system_clock::to_time_t(timestamp);
-    std::stringstream resultStream;
-    resultStream << std::put_time(std::localtime(&time_tTimestamp), "%Y-%m-%d %H:%M:%S");
-    return resultStream.str();
-}
-
-std::string AbstractBacktester::increment_timestamp(std::string current_date) {
-    /* 
-    Helper function to increment the current date by a minute.
-    :param current_date: current_date in the backtesting period
-    :return: the next minute
-    */
-    // Convert the timestamp string to a std::chrono::time_point object
-    std::tm tmStruct = {};
-    std::istringstream timestampStream(start_date);
-    timestampStream >> std::get_time(&tmStruct, "%Y-%m-%d %H:%M:%S");
-    std::chrono::system_clock::time_point timestamp;
-    timestamp = std::chrono::system_clock::from_time_t(std::mktime(&tmStruct));
-    // Add the specified number of minutes to the time_point
-    timestamp += std::chrono::minutes(1);
-    // Convert the updated time_point back to a timestamp string
-    std::time_t time_tTimestamp = std::chrono::system_clock::to_time_t(timestamp);
-    std::stringstream resultStream;
-    resultStream << std::put_time(std::localtime(&time_tTimestamp), "%Y-%m-%d %H:%M:%S");
-    return resultStream.str();
-}
 
 std::string AbstractBacktester::get_start_date() {
     return this->start_date;
@@ -124,6 +83,14 @@ std::string AbstractBacktester::get_start_date() {
 
 std::string AbstractBacktester::get_end_date() {
     return this->end_date;
+}
+
+int AbstractBacktester::get_max_lookback() {
+    return this->max_lookback;
+}
+
+int AbstractBacktester::get_data_reload_interval() {
+    return this->data_reload_interval;
 }
 
 void AbstractBacktester::save(const std::string& filename) {

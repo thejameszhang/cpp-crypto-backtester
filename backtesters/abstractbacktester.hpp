@@ -4,10 +4,9 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
-#include <chrono>
-#include <iomanip>
 #include <eigen3/Eigen/Dense>
 #include <abstractalpha.hpp>
+#include "../utils.hpp""
 typedef long double ld;
 
 #ifndef ABSTRACTBACKTESTER_H
@@ -23,11 +22,23 @@ public:
                        std::string _exchange, 
                        std::vector<std::string> _factors);
     
-    // Start date getter
+    // Start date getter.
     std::string get_start_date();
 
-    // End date getter
+    // End date getter.
     std::string get_end_date();
+
+    // Max lookback getter.
+    int get_max_lookback();
+
+    // Data reload interval getter.
+    int get_data_reload_interval();
+    
+    // Gets a chunk of data for backtesting.
+    std::unordered_map<std::string, std::vector<std::vector<ld>>> 
+    get_data_chunk(std::string start_date);
+
+
 
     // Save the current backtester object.
     void save(const std::string& filename);
@@ -56,16 +67,6 @@ private:
     "binance_spot", "okx"};
     std::unordered_set<std::string> factors_set = {"open", "high", "low", "close", 
     "volume", "vwap"};
-
-    // Gets a chunk of data for backtesting.
-    std::unordered_map<std::string, std::vector<std::vector<ld>>> 
-    get_data_chunk(std::string start_date);
-
-    // Find the next end time for the chunk given the start time.
-    std::string chunk_end_date(std::string start_date);
-
-    // Increment the current time by a minute.
-    std::string increment_timestamp(std::string current_date);
 };
 
 #endif // ABSTRACTBACKTESTER_H
