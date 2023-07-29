@@ -1,8 +1,14 @@
 #include "abstractalpha.hpp"
 
 // Researchers must implement this function.
-std::vector<long double> AbstractAlpha::generate_trades() {
+std::vector<ld> 
+AbstractAlpha::generate_trades(std::unordered_map<std::string, std::vector<std::vector<ld>>>) {
     throw std::logic_error("Implement this function.");
+}
+
+// Lookback getter.
+int AbstractAlpha::get_lookback() {
+    return this->lookback;
 }
 
 // Saves current alpha object.

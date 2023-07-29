@@ -1,7 +1,10 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_map>
 #include <fstream>
+
+typedef long double ld;
 
 #ifndef ABSTRACTALPHA_H
 #define ABSTRACTALPHA_H
@@ -13,7 +16,11 @@ public:
     AbstractAlpha();
 
     // Pure virtual function for backtesting
-    virtual std::vector<long double> generate_trades() = 0;
+    virtual std::vector<ld> 
+    generate_trades(std::unordered_map<std::string, std::vector<std::vector<ld>>>) = 0;
+
+    // Lookback getter.
+    int get_lookback();
 
     // Save current alpha object.
     void save(const std::string& filename);
