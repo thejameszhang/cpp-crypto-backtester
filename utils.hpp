@@ -4,6 +4,8 @@
 #include <unordered_map>
 #include <chrono>
 #include <iomanip>
+#include <thread>
+#include <mutex>
 #include <mysql_driver.h>
 #include <mysql_connection.h>
 #include <cppconn/statement.h>
@@ -22,11 +24,21 @@ std::vector<std::vector<ld>> execute_query(std::string query);
 std::unordered_map<int, std::string> get_universe(std::string factor, 
                                                 std::string exchange);
 
+// Crafts the appropriate MySQL query given start, end, factor, exchange.
+std::string create_query(std::string start_date, std::string end_date,
+                        std::string factor, std::string exchange);
+
 // Given start, end, factor, and exchange, get the data.
 std::vector<std::vector<ld>> get_data(std::string start_date, 
                                       std::string end_date, 
                                       std::string factor, 
                                       std::string exchange);
+
+// Given start, end, exchange, and list of factors, use threads
+// to get the data concurrently.
+std::unordered_map<std::string, std::vector<std::vector<ld>>>
+    get_data(std::string start_date, std::string end_date, 
+            std::string exchange,  std::vector<std::string> factors);
 
 // Find the next end time for the chunk given the start time.
 std::string time_shift(std::string current_date, int minutes);
@@ -36,11 +48,14 @@ std::string time_shift(std::string current_date, int minutes);
 std::vector<std::vector<ld>>
 slice(std::vector<std::vector<ld>> data, int begin, int end);
 
-// Computes the returns of the currencies.
-std::vector<std::vector<ld>> pct_change(std::vector<std::vector<ld>> matrix);
+// Computes returns function for a single alpha backtester.
+std::vector<std::vector<ld>> 
+compute_returns(std::vector<std::vector<ld>>& close_prices, 
+                            std::vector<std::vector<ld>>& holdings);
 
-// Performs element-wise multiplication between two matrices.
-void element_wise_multiplication(std::vector<std::vector<ld>>& returns, 
-std::vector<std::vector<ld>>& holdings);
+// Computes returns function for a multiple alpha backtester.
+std::vector<std::vector<std::vector<ld>>>
+compute_returns(std::vector<std::vector<ld>>& close_prices,
+                std::vector<std::vector<std::vector<ld>>>& holdings);
 
 #endif
