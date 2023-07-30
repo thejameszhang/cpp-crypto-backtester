@@ -4,7 +4,6 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
-#include <eigen3/Eigen/Dense>
 #include <abstractalpha.hpp>
 #include "../utils.hpp""
 typedef long double ld;
@@ -36,9 +35,7 @@ public:
     
     // Gets a chunk of data for backtesting.
     std::unordered_map<std::string, std::vector<std::vector<ld>>> 
-    get_data_chunk(std::string start_date);
-
-
+    get_data_chunk(const std::string& start_date);
 
     // Save the current backtester object.
     void save(const std::string& filename);
@@ -63,9 +60,9 @@ private:
     std::unordered_map<int, std::string> universe;
     
     // Define the sets of all exchanges and factors.
-    std::unordered_set<std::string> exchanges_set = {"binance_futures", "binanceus", 
+    const std::unordered_set<std::string> exchanges_set = {"binance_futures", "binanceus", 
     "binance_spot", "okx"};
-    std::unordered_set<std::string> factors_set = {"open", "high", "low", "close", 
+    const std::unordered_set<std::string> factors_set = {"open", "high", "low", "close", 
     "volume", "vwap"};
 };
 

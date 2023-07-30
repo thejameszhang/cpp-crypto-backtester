@@ -34,7 +34,7 @@ AbstractBacktester::AbstractBacktester(std::string _start_date,
     // Check if all factors are in the list of factors. 
     for (auto factor : _factors) {
         if (factors_set.find(factor) == factors_set.end()) {
-            throw std::logic_error("Factor not found.");
+            throw std::logic_error("Factor " + factor + " not found.");
         }
     }
     // If close price is not found in the list of factors, then add it.
@@ -54,7 +54,7 @@ AbstractBacktester::AbstractBacktester(std::string _start_date,
 }
 
 std::unordered_map<std::string, std::vector<std::vector<ld>>>
-AbstractBacktester::get_data_chunk(std::string start_date) {
+AbstractBacktester::get_data_chunk(const std::string& start_date) {
     /* 
     Gets the next chunk of data in the backtesting period. 
     :param start_date: the chunk starting date
@@ -68,10 +68,15 @@ AbstractBacktester::get_data_chunk(std::string start_date) {
     // If the end date is later than the end of the backtesting period.
     end_date = std::min(end_date, this->end_date);
     // Query database for the data for each factor.
-    std::string real_start = time_shift(start_date, -this->max_lookback);
+    const std::string real_start = time_shift(start_date, -this->max_lookback);
     std::unordered_map<std::string, std::vector<std::vector<ld>>> res;
-    for (auto factor : this->factors) {
-        res[factor] = get_data(real_start, end_date, this->exchange, factor);
+    // Use threads depending on the length of factors.
+    if (this->factors.size() == 1) {
+        // No need to use threads if only one factor.
+        res[this->factors[0]] = get_data(real_start, end_date, this->factors[0], this->exchange); 
+    } else {
+        // Uses threads.
+        res = get_data(real_start, end_date, this->exchange, this->factors);
     }
     return res;
 }
