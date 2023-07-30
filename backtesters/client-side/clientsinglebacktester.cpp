@@ -48,17 +48,15 @@ ClientSingleBacktester::backtest(AbstractAlpha* alpha) {
             chunk_end = time_shift(this->current_date, data_reload_interval);
         }
 
-        // No need to partition or rebalance the universe, don't need that yet
-
         // Slice the chunked data for the alpha.
         for (auto pair : chunk) {
             alpha_data[pair.first] = slice(pair.second, curr - alpha_lookback, curr + 1);
-            this->close_prices.push_back(chunk["close"][curr]);
         }
 
         // Get the alpha's holdings and append it to the holdings matrix.
         alpha_holdings = alpha->generate_trades(alpha_data);
         holdings.push_back(alpha_holdings);
+        this->close_prices.push_back(chunk["close"][curr]);
 
         // Increment the current timestamps.
         this->current_date = time_shift(this->current_date, 1);
@@ -66,9 +64,7 @@ ClientSingleBacktester::backtest(AbstractAlpha* alpha) {
     }
 
     // After the backtesting, compute the returns.
-    std::vector<std::vector<ld>> returns = pct_change(this->close_prices);
-    element_wise_multiplication(returns, holdings);
-    
+    std::vector<std::vector<ld>> returns = compute_returns(this->close_prices, holdings);
     // Return the trader's returns and historical holdings.
     return {returns, holdings};
 }
